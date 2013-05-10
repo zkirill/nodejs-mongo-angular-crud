@@ -1,4 +1,3 @@
-nodejs-mongo-angular-crud
+Basic CRUD with Node.js, MongoDB and AngularJS.
 =========================
 
-Tutorial on basic CRUD using Node.js, MongoDB and AngularJS.
