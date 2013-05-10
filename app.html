@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html ng-app="myApp" lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CRUD</title>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular-resource.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular-cookies.js"></script>
+    <script>
+        angular.module("myApp", ["ngResource"])
+                .factory('Document', function ($resource) {
+                    return $resource('/api/document/', {}, {
+                        update: {
+                            method: 'PUT',
+                            params: {
+                                id: '@_id'
+                            }
+                        }
+                    });
+                });
+
+        /**
+         * Document list controller.
+         * @param $scope
+         * @param Document
+         * @constructor
+         */
+        function ListCtrl ($scope, Document) {
+            var documents = Document.query(function () {
+                       $scope.documents = documents;
+            }, function ($http) {
+
+                // Something went wrong and we should inspect $http to find out what.
+                console.log('Couldn\'t get document.');
+            });
+
+            // Read a document.
+            $scope.readDocument = function (index) {
+                var documentAtIndex = documents[index];
+                var id = documentAtIndex._id;
+
+                // Send GET request to the back end.
+                var document = Document.get({id: id}, function () {
+                    if (document) {
+                        $scope.expandedDocument = document;
+                    }
+                }, function ($http) {
+
+                    // Something went wrong and we should inspect $http to find out what.
+                    console.log('Couldn\t get document.');
+                })
+            };
+
+            // Create a document.
+            $scope.createDocument = function () {
+                var document = new Document({
+                    date: new Date()
+                });
+
+                // Send POST request to the back end.
+                document.$save(function (data) {
+                    documents.push(data);
+                }, function ($http) {
+
+                    // Something went wrong and we should inspect $http to find out what.
+                    console.log('Couldn\'t save document.');
+                });
+            };
+
+            // Delete a document.
+            $scope.deleteDocument = function (index) {
+                var document = documents[index];
+                var id = document._id;
+
+                // Send DELETE request to the back end.
+                Document.delete({id: id}, function () {
+                    documents.splice(index, 1);
+                }, function ($http) {
+
+                    // Something went wrong and we should inspect $http to find out what.
+                    console.log('Couldn\'t save document.');
+                });
+            };
+
+            // Update document.
+            $scope.updateDocument = function (index) {
+                var document = documents[index];
+
+                // Update the date of last update.
+                document.date = new Date();
+
+                // Send UPDATE request to the back end.
+                Document.update(document, function (data) {
+                    documents[index] = data;
+                }, function ($http) {
+
+                    // Something went wrong and we should inspect $http to find out what.
+                    console.log('Couldn\'t save document.');
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+<div ng-controller="ListCtrl">
+    <button type="button" ng-click="createDocument()">Create a new document</button>
+    <ul>
+        <li ng-repeat="document in documents">
+            <span>Document {{document._id}} last updated on {{document.date}}</span>
+            <button type="button" ng-click="readDocument($index)">Read</button>
+            <button type="button" ng-click="updateDocument($index)">Update</button>
+            <button type="button" ng-click="deleteDocument($index)">Delete</button>
+        </li>
+    </ul>
+    <div ng-show="expandedDocument"><!-- Show div only if expandedDocument isn't null. -->
+        Read document with ID {{expandedDocument._id}} last modified on {{expandedDocument.date}}.
+    </div>
+</div>
+</body>
+</html>

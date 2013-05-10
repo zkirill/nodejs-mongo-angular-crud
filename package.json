@@ -1,0 +1,14 @@
+{
+  "name": "crud",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "mongodb": "1.2.14"
+  },
+  "engines": {
+    "node": "0.8.x"
+  }
+}
