@@ -24,7 +24,7 @@ function handlePOST (req, callback) {
     try {
        post = JSON.parse(body);
     } catch (e) {
-      return callback();
+      return callback(e);
     }
     return callback(null, post);
   });
@@ -86,7 +86,7 @@ http.createServer(function (req, res) {
         id = new ObjectID(id);
       } catch (e) {
         res.writeHead(400);
-        res.end();
+        return res.end();
       }
 
       if (req.method === 'GET') {
